@@ -10,8 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { initialIntentDetection } from './initial-intent-detection';
-import { extractEntities } from './extract-entities-from-message';
 import type { Task } from '@/lib/types';
 
 
@@ -65,11 +63,6 @@ const generateResponsePrompt = ai.definePrompt({
   input: {
     schema: z.object({
       userInput: z.string(),
-    }),
-  },
-  output: {
-    schema: z.object({
-      response: z.string(),
     }),
   },
   tools: [manageTasksTool],
