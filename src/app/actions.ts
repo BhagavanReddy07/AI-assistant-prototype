@@ -33,7 +33,7 @@ export async function getAiResponse(userInput: string): Promise<{ response: stri
             input: { userInput, intent, entities },
         });
 
-        const responseText = llmResponse.output();
+        const responseText = llmResponse.text;
         if (!responseText) {
             throw new Error('AI failed to generate a response.');
         }
