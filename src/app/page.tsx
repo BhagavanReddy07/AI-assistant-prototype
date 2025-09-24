@@ -8,6 +8,7 @@ import { SidebarProvider } from '@/components/ui/sidebar';
 import { ChatHistorySidebar } from '@/components/chat/chat-history-sidebar';
 import { ChatPanel } from '@/components/chat/chat-panel';
 import { MemoryEditorPanel } from '@/components/chat/memory-editor-panel';
+import { useToast } from '@/hooks/use-toast';
 
 // Mock UUID for now as it may cause issues in some environments without proper setup
 const mockUuid = () => Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -16,6 +17,7 @@ export default function Home() {
   const [conversations, setConversations] = React.useState<Conversation[]>([]);
   const [activeConversationId, setActiveConversationId] = React.useState<string | null>(null);
   const [isClient, setIsClient] = React.useState(false);
+  const { toast } = useToast();
 
   React.useEffect(() => {
     setIsClient(true);
@@ -105,6 +107,13 @@ export default function Home() {
     ));
 
     const { response, intent, entities } = await getAiResponse(userInput);
+
+    if (intent === 'manageTasks' && entities.includes('add')) {
+        toast({
+            title: "Task Added",
+            description: "Your new task has been added to the Task Manager.",
+        });
+    }
     
     const assistantMessage: Message = {
       id: assistantMessageId,

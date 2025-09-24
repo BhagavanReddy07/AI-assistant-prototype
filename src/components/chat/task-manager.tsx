@@ -17,6 +17,7 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Label } from '../ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 export type Task = {
   id: string;
@@ -41,6 +42,7 @@ export function TaskManager({ open, onOpenChange }: TaskManagerProps) {
   const [newTaskContent, setNewTaskContent] = React.useState('');
   const [newTaskTime, setNewTaskTime] = React.useState('');
   const [newTaskType, setNewTaskType] = React.useState<'Task' | 'Alarm' | 'Reminder'>('Task');
+  const { toast } = useToast();
   
   const handleAddTask = () => {
     if (newTaskContent.trim() === '') return;
@@ -57,6 +59,11 @@ export function TaskManager({ open, onOpenChange }: TaskManagerProps) {
     setTasks(prev => [newTask, ...prev]);
     setNewTaskContent('');
     setNewTaskTime('');
+
+    toast({
+        title: "Task Added",
+        description: `Your ${newTaskType.toLowerCase()} has been added.`,
+    });
   };
 
   const handleDeleteTask = (id: string) => {

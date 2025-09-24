@@ -30,49 +30,39 @@ export async function generateResponseFromIntentAndEntities(
   return generateResponseFlow(input);
 }
 
-const detectIntentTool = ai.defineTool({
-  name: 'detectIntent',
-  description: 'Detects the intent of the user input.',
-  inputSchema: z.object({
-    text: z.string().describe('The text to analyze for intent.'),
-  }),
-  outputSchema: z.object({
-    intent: z.string().describe('The identified intent of the message.'),
-    confidence: z.number().describe('The confidence level of the intent detection.'),
-  }),
-},
-async (input) => {
-    return await initialIntentDetection({ message: input.text });
-  }
-);
+const manageTasksTool = ai.defineTool({
+    name: 'manageTasks',
+    description: 'Use this tool to manage tasks, reminders, and alarms. You can add, remove, or view them.',
+    inputSchema: z.object({
+        operation: z.enum(['add', 'remove', 'view']),
+        task: z.object({
+            type: z.enum(['Task', 'Reminder', 'Alarm']),
+            content: z.string(),
+            time: z.string().optional().describe('The time for the task in ISO 8601 format, e.g., 2024-08-15T14:00:00'),
+        }).optional(),
+    }),
+    outputSchema: z.string(),
+}, async ({ operation, task }) => {
+    if (operation === 'add' && task) {
+        // In a real app, you'd save this to a database.
+        // For now, we're acknowledging the task has been "added".
+        console.log('Adding task:', task);
+        return `Task "${task.content}" has been added successfully.`;
+    }
+    return "This functionality is in development.";
+});
 
-const extractEntitiesTool = ai.defineTool({
-  name: 'extractEntities',
-  description: 'Extracts entities from the user input.',
-  inputSchema: z.object({
-    text: z.string().describe('The text to extract entities from.'),
-  }),
-  outputSchema: z.object({
-    entities: z
-    .array(z.string())
-    .describe('The extracted entities from the user message.'),
-  }),
-},
-async (input) => {
-    return await extractEntities({ message: input.text });
-  }
-);
 
 const generateResponsePrompt = ai.definePrompt({
   name: 'generateResponsePrompt',
   input: {schema: GenerateResponseInputSchema},
   output: {schema: GenerateResponseOutputSchema},
-  tools: [detectIntentTool, extractEntitiesTool],
-  prompt: `You are a helpful AI assistant. 
+  tools: [manageTasksTool],
+  prompt: `You are a helpful AI assistant named SABA. Your role is to assist the user with their requests.
 
+  If the user asks to set a reminder, alarm, or create a task, use the manageTasks tool.
+  
   The user input is: {{{userInput}}}
-
-  Use the detectIntent and extractEntities tools to understand the user input and generate a response.
   `,
 });
 
