@@ -30,11 +30,17 @@ export function ChatPanel({ conversation, onSendMessage }: ChatPanelProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isSending) return;
-    setIsSending(true);
-    await onSendMessage(input.trim());
+    const messageToSend = input.trim();
+    if (!messageToSend || isSending) return;
+    
     setInput('');
-    setIsSending(false);
+    setIsSending(true);
+
+    try {
+      await onSendMessage(messageToSend);
+    } finally {
+      setIsSending(false);
+    }
   };
   
   const handleTextareaKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
