@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Paperclip, Send, BrainCircuit, Mic } from 'lucide-react';
+import { Send, BrainCircuit } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,10 +32,10 @@ export function ChatPanel({ conversation, onSendMessage }: ChatPanelProps) {
     e.preventDefault();
     const messageToSend = input.trim();
     if (!messageToSend || isSending) return;
-    
+
     setInput('');
     setIsSending(true);
-
+    
     try {
       await onSendMessage(messageToSend);
     } finally {
@@ -98,12 +98,6 @@ export function ChatPanel({ conversation, onSendMessage }: ChatPanelProps) {
                 rows={1}
                 style={{maxHeight: '150px'}}
               />
-              <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
-                <Paperclip className="h-5 w-5" />
-              </Button>
-               <Button type="button" variant="ghost" size="icon" className="text-muted-foreground">
-                <Mic className="h-5 w-5" />
-              </Button>
               <Button type="submit" size="icon" disabled={isSending || !input.trim()}>
                 <Send className="h-5 w-5" />
               </Button>
