@@ -66,7 +66,7 @@ export function ChatPanel({ conversation, onSendMessage }: ChatPanelProps) {
               <div className="mb-4 p-4 bg-primary/10 rounded-full">
                 <BrainCircuit className="h-12 w-12 text-primary" />
               </div>
-              <h2 className="text-2xl font-semibold text-foreground mb-2">PersonalAI Proto</h2>
+              <h2 className="text-2xl font-semibold text-foreground mb-2">SABA</h2>
               <p className="max-w-md mb-6">Start a conversation with your personal AI assistant. It learns, adapts, and helps you with your tasks.</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3 w-full max-w-lg">
                 {starterPrompts.map(prompt => (

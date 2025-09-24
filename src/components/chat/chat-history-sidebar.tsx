@@ -62,7 +62,7 @@ export function ChatHistorySidebar({
              <BrainCircuit className="h-6 w-6 text-primary-foreground" />
            </div>
           <h1 className="text-lg font-semibold text-sidebar-foreground group-data-[collapsible=icon]:hidden">
-            PersonalAI Proto
+            SABA
           </h1>
         </div>
         <Separator className="bg-sidebar-border/50" />
