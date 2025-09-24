@@ -95,7 +95,7 @@ export default function Home() {
     if (conversation.messages.length <= 2) return;
 
     const summary = await summarizeConversation(conversation.messages);
-    if (summary) {
+    if (summary && summary.trim() !== '' && summary.toLowerCase() !== 'null') {
       await handleAddMemory(summary);
       toast({
         title: "Memory Saved",
@@ -229,7 +229,7 @@ export default function Home() {
           onDeleteConversation={handleDeleteConversation}
           tasks={tasks}
           onAddTask={handleAddTask}
-          onDeleteTask={handleDeleteTask}
+          onDeleteTask={onDeleteTask}
         />
         <main className="flex-1 flex flex-col h-screen overflow-hidden">
           <ChatPanel

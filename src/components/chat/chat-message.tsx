@@ -60,12 +60,21 @@ export function ChatMessage({ message }: ChatMessageProps) {
         )}
       >
         <p className="text-sm text-foreground whitespace-pre-wrap">{content}</p>
-        {isAssistant && (intent || entities) && (
+        {isAssistant && intent && intent !== 'error' && (
           <div className="mt-3 pt-3 border-t border-border/50 flex flex-wrap gap-2 items-center">
-            {intent && intent !== 'error' && <Badge variant="secondary">Intent: {intent}</Badge>}
-            {entities && entities.length > 0 && entities.map(entity => (
-              <Badge variant="outline" key={entity}>{entity}</Badge>
-            ))}
+            <div className="flex items-center gap-2">
+              <BrainCircuit className="h-4 w-4 text-zinc-500" />
+              <span className="text-xs font-medium text-zinc-500">
+                Intent: {intent}
+              </span>
+            </div>
+            {entities &&
+              entities.length > 0 &&
+              entities.map((entity) => (
+                <Badge variant="outline" key={entity}>
+                  {entity}
+                </Badge>
+              ))}
           </div>
         )}
       </div>
