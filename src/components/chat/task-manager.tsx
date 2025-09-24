@@ -1,0 +1,114 @@
+
+'use client';
+
+import * as React from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Plus, Trash2 } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
+import { Badge } from '../ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
+
+export type Task = {
+  id: string;
+  type: 'Task' | 'Alarm' | 'Reminder';
+  content: string;
+  time?: string;
+};
+
+const mockTasks: Task[] = [
+    { id: '1', type: 'Reminder', content: 'Call mom', time: '2024-08-15T14:00:00' },
+    { id: '2', type: 'Task', content: 'Finish project report' },
+    { id: '3', type: 'Alarm', content: 'Wake up', time: '2024-08-15T07:00:00' },
+];
+
+interface TaskManagerProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
+export function TaskManager({ open, onOpenChange }: TaskManagerProps) {
+  const [tasks, setTasks] = React.useState<Task[]>(mockTasks);
+  const [newTaskContent, setNewTaskContent] = React.useState('');
+  const [newTaskType, setNewTaskType] = React.useState<'Task' | 'Alarm' | 'Reminder'>('Task');
+  
+  const handleAddTask = () => {
+    if (newTaskContent.trim() === '') return;
+
+    const newTask: Task = {
+      id: Date.now().toString(),
+      type: newTaskType,
+      content: newTaskContent,
+    };
+    setTasks(prev => [newTask, ...prev]);
+    setNewTaskContent('');
+  };
+
+  const handleDeleteTask = (id: string) => {
+    setTasks(prev => prev.filter(task => task.id !== id));
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px] md:max-w-[600px] flex flex-col h-[70vh]">
+        <DialogHeader>
+          <DialogTitle>Task Manager</DialogTitle>
+          <DialogDescription>
+            Manage your tasks, alarms, and reminders.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="flex-1 flex flex-col gap-4 py-4 overflow-hidden">
+            <div className="flex gap-2">
+                <Input
+                    value={newTaskContent}
+                    onChange={(e) => setNewTaskContent(e.target.value)}
+                    placeholder="Add a new task..."
+                    onKeyDown={(e) => e.key === 'Enter' && handleAddTask()}
+                />
+                 <Select value={newTaskType} onValueChange={(value: any) => setNewTaskType(value)}>
+                    <SelectTrigger className="w-[120px]">
+                        <SelectValue placeholder="Type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectItem value="Task">Task</SelectItem>
+                        <SelectItem value="Reminder">Reminder</SelectItem>
+                        <SelectItem value="Alarm">Alarm</SelectItem>
+                    </SelectContent>
+                </Select>
+                <Button onClick={handleAddTask} size="icon" variant="outline">
+                    <Plus className="h-4 w-4" />
+                </Button>
+            </div>
+            <ScrollArea className="flex-1 pr-4 -mr-4">
+            <div className="space-y-2">
+                {tasks.map((task) => (
+                <div key={task.id} className="flex items-center gap-2 p-2 border rounded-md">
+                    <div className='flex-1'>
+                        <p className="text-sm font-medium">{task.content}</p>
+                        <div className='flex items-center gap-2 mt-1'>
+                           <Badge variant={
+                               task.type === 'Alarm' ? 'destructive' : task.type === 'Reminder' ? 'secondary' : 'default'
+                           }>{task.type}</Badge>
+                           {task.time && <p className="text-xs text-muted-foreground">{new Date(task.time).toLocaleString()}</p>}
+                        </div>
+                    </div>
+                    <Button variant="ghost" size="icon" onClick={() => handleDeleteTask(task.id)}>
+                    <Trash2 className="h-4 w-4 text-muted-foreground" />
+                    </Button>
+                </div>
+                ))}
+            </div>
+            </ScrollArea>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
