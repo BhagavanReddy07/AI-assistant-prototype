@@ -87,11 +87,19 @@ const generateResponseFlow = ai.defineFlow(
   },
   async input => {
     const llmResponse = await generateResponsePrompt(input);
-    const toolResponse = llmResponse.toolRequest?.tool.output;
+    
+    let task = null;
+    if (llmResponse.toolRequest) {
+        // Find the output of the manageTasks tool call
+        const taskToolOutput = llmResponse.toolRequest.tool.output;
+        if (taskToolOutput) {
+            task = taskToolOutput as Omit<Task, 'id'>;
+        }
+    }
 
-    const output = {
+    const output: GenerateResponseOutput = {
         response: llmResponse.text,
-        task: (toolResponse as Omit<Task, 'id'>) || null,
+        task: task,
     };
 
     if (!output.response) {
