@@ -14,3 +14,10 @@ export type Conversation = {
   createdAt: Date;
   messages: Message[];
 };
+
+export type Task = {
+  id: string;
+  type: 'Task' | 'Alarm' | 'Reminder';
+  content: string;
+  time?: string;
+};

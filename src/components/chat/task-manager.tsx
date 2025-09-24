@@ -1,4 +1,3 @@
-
 'use client';
 
 import * as React from 'react';
@@ -8,7 +7,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -17,57 +15,37 @@ import { ScrollArea } from '../ui/scroll-area';
 import { Badge } from '../ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Label } from '../ui/label';
-import { useToast } from '@/hooks/use-toast';
+import type { Task } from '@/lib/types';
 
-export type Task = {
-  id: string;
-  type: 'Task' | 'Alarm' | 'Reminder';
-  content: string;
-  time?: string;
-};
-
-const mockTasks: Task[] = [
-    { id: '1', type: 'Reminder', content: 'Call mom', time: '2024-08-15T14:00:00' },
-    { id: '2', type: 'Task', content: 'Finish project report' },
-    { id: '3', type: 'Alarm', content: 'Wake up', time: '2024-08-15T07:00:00' },
-];
 
 interface TaskManagerProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
+    tasks: Task[];
+    onAddTask: (task: Omit<Task, 'id'>) => void;
+    onDeleteTask: (id: string) => void;
 }
 
-export function TaskManager({ open, onOpenChange }: TaskManagerProps) {
-  const [tasks, setTasks] = React.useState<Task[]>(mockTasks);
+export function TaskManager({ open, onOpenChange, tasks, onAddTask, onDeleteTask }: TaskManagerProps) {
   const [newTaskContent, setNewTaskContent] = React.useState('');
   const [newTaskTime, setNewTaskTime] = React.useState('');
   const [newTaskType, setNewTaskType] = React.useState<'Task' | 'Alarm' | 'Reminder'>('Task');
-  const { toast } = useToast();
   
   const handleAddTask = () => {
     if (newTaskContent.trim() === '') return;
 
-    const newTask: Task = {
-      id: Date.now().toString(),
+    const taskToAdd: Omit<Task, 'id'> = {
       type: newTaskType,
       content: newTaskContent,
     };
     if (newTaskTime) {
-        newTask.time = new Date(newTaskTime).toISOString();
+        taskToAdd.time = new Date(newTaskTime).toISOString();
     }
-
-    setTasks(prev => [newTask, ...prev]);
+    
+    onAddTask(taskToAdd);
+    
     setNewTaskContent('');
     setNewTaskTime('');
-
-    toast({
-        title: "Task Added",
-        description: `Your ${newTaskType.toLowerCase()} has been added.`,
-    });
-  };
-
-  const handleDeleteTask = (id: string) => {
-    setTasks(prev => prev.filter(task => task.id !== id));
   };
 
   return (
@@ -133,7 +111,7 @@ export function TaskManager({ open, onOpenChange }: TaskManagerProps) {
                            {task.time && <p className="text-xs text-muted-foreground">{new Date(task.time).toLocaleString()}</p>}
                         </div>
                     </div>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteTask(task.id)} className="shrink-0">
+                    <Button variant="ghost" size="icon" onClick={() => onDeleteTask(task.id)} className="shrink-0">
                         <Trash2 className="h-4 w-4 text-muted-foreground" />
                     </Button>
                 </div>

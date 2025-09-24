@@ -22,7 +22,7 @@ import {
   Trash2,
   ListTodo,
 } from 'lucide-react';
-import type { Conversation } from '@/lib/types';
+import type { Conversation, Task } from '@/lib/types';
 import { cn } from '@/lib/utils';
 import {
   AlertDialog,
@@ -43,6 +43,9 @@ interface ChatHistorySidebarProps {
   onSelectConversation: (id: string) => void;
   onNewConversation: () => void;
   onDeleteConversation: (id: string) => void;
+  tasks: Task[];
+  onAddTask: (task: Omit<Task, 'id'>) => void;
+  onDeleteTask: (id: string) => void;
 }
 
 export function ChatHistorySidebar({
@@ -51,6 +54,9 @@ export function ChatHistorySidebar({
   onSelectConversation,
   onNewConversation,
   onDeleteConversation,
+  tasks,
+  onAddTask,
+  onDeleteTask,
 }: ChatHistorySidebarProps) {
   const [isTaskManagerOpen, setIsTaskManagerOpen] = React.useState(false);
 
@@ -141,7 +147,13 @@ export function ChatHistorySidebar({
           </div>
         </SidebarFooter>
       </Sidebar>
-      <TaskManager open={isTaskManagerOpen} onOpenChange={setIsTaskManagerOpen} />
+      <TaskManager 
+        open={isTaskManagerOpen} 
+        onOpenChange={setIsTaskManagerOpen}
+        tasks={tasks}
+        onAddTask={onAddTask}
+        onDeleteTask={onDeleteTask}
+      />
     </>
   );
 }
