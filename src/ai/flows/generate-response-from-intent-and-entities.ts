@@ -62,16 +62,23 @@ const manageTasksTool = ai.defineTool({
 
 const generateResponsePrompt = ai.definePrompt({
   name: 'generateResponsePrompt',
-  input: {schema: GenerateResponseInputSchema},
-  output: {schema: GenerateResponseOutputSchema},
+  input: {
+    schema: z.object({
+      userInput: z.string(),
+    }),
+  },
+  output: {
+    schema: z.object({
+      response: z.string(),
+    }),
+  },
   tools: [manageTasksTool],
   prompt: `You are a helpful AI assistant named SABA. Your role is to assist the user with their requests.
 
-  If the user asks to set a reminder, alarm, or create a task, use the manageTasks tool.
-  When you use the tool, respond to the user confirming that the task has been added.
-  For example, if the user says "remind me to call mom", you should say "OK, I've added a reminder to call mom."
-  
-  The user input is: {{{userInput}}}
+If the user asks to set a reminder, alarm, or create a task, use the manageTasks tool. The 'content' of the task should be a concise description of what the user wants to do.
+When you use the tool to add a task, respond to the user with a simple confirmation like "OK, I've added [task content]." or "Reminder set." Do not output JSON.
+
+The user input is: {{{userInput}}}
   `,
 });
 
