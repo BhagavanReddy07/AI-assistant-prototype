@@ -2,45 +2,26 @@
 
 import { initialIntentDetection } from '@/ai/flows/initial-intent-detection';
 import { extractEntities } from '@/ai/flows/extract-entities-from-message';
-import { ai } from '@/ai/genkit';
-import { z } from 'zod';
+import { generateResponseFromIntentAndEntities } from '@/ai/flows/generate-response-from-intent-and-entities';
 
-const finalResponsePrompt = ai.definePrompt({
-    name: 'finalResponsePrompt',
-    input: {
-        schema: z.object({
-            userInput: z.string(),
-            intent: z.string(),
-            entities: z.array(z.string()),
-        }),
-    },
-    output: {
-        schema: z.object({
-            response: z.string(),
-        })
-    },
-    prompt: `You are a personal AI assistant named Proto. The user said: "{{userInput}}".
-    My analysis suggests the user's intent is "{{intent}}" and the key entities are: {{JSON.stringify(entities)}}.
-    Based on this information, provide a helpful and conversational response. Keep your response concise and helpful. Adapt your communication style to be sophisticated and intelligent.`,
-});
 
 export async function getAiResponse(userInput: string): Promise<{ response: string; intent: string; entities: string[] }> {
     try {
-        const [intentResult, entitiesResult] = await Promise.all([
+        const [intentResult, entitiesResult, finalResponseResult] = await Promise.all([
             initialIntentDetection({ message: userInput }),
-            extractEntities({ message: userInput })
+            extractEntities({ message: userInput }),
+            generateResponseFromIntentAndEntities({ userInput }),
         ]);
 
         const { intent } = intentResult;
         const { entities } = entitiesResult;
+        const { response } = finalResponseResult;
 
-        const { output } = await finalResponsePrompt({ userInput, intent, entities });
-
-        if (!output?.response) {
+        if (!response) {
             throw new Error('AI failed to generate a response.');
         }
         
-        return { response: output.response, intent, entities };
+        return { response, intent, entities };
 
     } catch (error) {
         console.error("Error getting AI response:", error);

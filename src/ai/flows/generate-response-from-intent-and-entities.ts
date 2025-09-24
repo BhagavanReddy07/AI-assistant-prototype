@@ -10,6 +10,9 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { initialIntentDetection } from './initial-intent-detection';
+import { extractEntities } from './extract-entities-from-message';
+
 
 const GenerateResponseInputSchema = z.object({
   userInput: z.string().describe('The user input text.'),
@@ -33,12 +36,13 @@ const detectIntentTool = ai.defineTool({
   inputSchema: z.object({
     text: z.string().describe('The text to analyze for intent.'),
   }),
-  outputSchema: z.string().describe('The detected intent.'),
+  outputSchema: z.object({
+    intent: z.string().describe('The identified intent of the message.'),
+    confidence: z.number().describe('The confidence level of the intent detection.'),
+  }),
 },
 async (input) => {
-    // Mock implementation, replace with actual intent detection logic.
-    // For now, return the input text as the intent.
-    return `The intent is: ${input.text}`;
+    return await initialIntentDetection({ message: input.text });
   }
 );
 
@@ -48,12 +52,14 @@ const extractEntitiesTool = ai.defineTool({
   inputSchema: z.object({
     text: z.string().describe('The text to extract entities from.'),
   }),
-  outputSchema: z.string().describe('The extracted entities.'),
+  outputSchema: z.object({
+    entities: z
+    .array(z.string())
+    .describe('The extracted entities from the user message.'),
+  }),
 },
 async (input) => {
-    // Mock implementation, replace with actual entity extraction logic.
-    // For now, return the input text as the entities.
-    return `The entities are: ${input.text}`;
+    return await extractEntities({ message: input.text });
   }
 );
 
@@ -78,6 +84,9 @@ const generateResponseFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await generateResponsePrompt(input);
-    return output!;
+    if (!output) {
+      throw new Error("AI failed to generate a response.");
+    }
+    return output;
   }
 );
