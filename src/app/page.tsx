@@ -96,8 +96,9 @@ export default function Home() {
     };
     
     let convoId = activeConversationId;
+    let currentConvoId = activeConversationId;
 
-    if (!convoId) {
+    if (!currentConvoId) {
       const newConversation: Conversation = {
         id: mockUuid(),
         title: userInput.substring(0, 30) + (userInput.length > 30 ? '...' : ''),
@@ -106,10 +107,10 @@ export default function Home() {
       };
       setConversations(prev => [newConversation, ...prev]);
       setActiveConversationId(newConversation.id);
-      convoId = newConversation.id;
+      currentConvoId = newConversation.id;
     } else {
        setConversations(prev => prev.map(c => 
-        c.id === convoId ? { ...c, messages: [...c.messages, userMessage] } : c
+        c.id === currentConvoId ? { ...c, messages: [...c.messages, userMessage] } : c
       ));
     }
 
@@ -123,7 +124,7 @@ export default function Home() {
     };
 
     setConversations(prev => prev.map(c => 
-      c.id === convoId ? { ...c, messages: [...c.messages, loadingMessage] } : c
+      c.id === currentConvoId ? { ...c, messages: [...c.messages, loadingMessage] } : c
     ));
 
     const { response, intent, entities, task } = await getAiResponse(userInput);
@@ -143,7 +144,7 @@ export default function Home() {
     };
 
     setConversations(prev => prev.map(c => {
-      if (c.id === convoId) {
+      if (c.id === currentConvoId) {
         const updatedMessages = c.messages.map(m => m.id === assistantMessageId ? assistantMessage : m);
         return { ...c, messages: updatedMessages };
       }

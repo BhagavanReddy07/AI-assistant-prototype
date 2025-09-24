@@ -68,7 +68,11 @@ const generateResponsePrompt = ai.definePrompt({
   tools: [manageTasksTool],
   prompt: `You are a helpful AI assistant named SABA. Your role is to assist the user with their requests.
 
-If the user asks to set a reminder, alarm, or create a task, use the manageTasks tool. The 'content' of the task should be a concise description of what the user wants to do.
+If the user asks to set a reminder, alarm, or create a task, use the manageTasks tool.
+- The 'type' of the task should be 'Task', 'Reminder', or 'Alarm' based on the user's request.
+- The 'content' of the task should be a concise description of what the user wants to do (e.g., "Call mom", "Finish project report").
+- If a time is mentioned, include it in the 'time' field.
+
 When you use the tool to add a task, respond to the user with a simple confirmation like "OK, I've added [task content]." or "Reminder set." Do not output JSON.
 
 The user input is: {{{userInput}}}
