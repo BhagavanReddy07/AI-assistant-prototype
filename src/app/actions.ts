@@ -14,6 +14,11 @@ const finalResponsePrompt = ai.definePrompt({
             entities: z.array(z.string()),
         }),
     },
+    output: {
+        schema: z.object({
+            response: z.string(),
+        })
+    },
     prompt: `You are a personal AI assistant named Proto. The user said: "{{userInput}}".
     My analysis suggests the user's intent is "{{intent}}" and the key entities are: {{JSON.stringify(entities)}}.
     Based on this information, provide a helpful and conversational response. Keep your response concise and helpful. Adapt your communication style to be sophisticated and intelligent.`,
@@ -29,16 +34,13 @@ export async function getAiResponse(userInput: string): Promise<{ response: stri
         const { intent } = intentResult;
         const { entities } = entitiesResult;
 
-        const llmResponse = await finalResponsePrompt.generate({
-            input: { userInput, intent, entities },
-        });
+        const { output } = await finalResponsePrompt({ userInput, intent, entities });
 
-        const responseText = llmResponse.text;
-        if (!responseText) {
+        if (!output?.response) {
             throw new Error('AI failed to generate a response.');
         }
         
-        return { response: responseText, intent, entities };
+        return { response: output.response, intent, entities };
 
     } catch (error) {
         console.error("Error getting AI response:", error);
