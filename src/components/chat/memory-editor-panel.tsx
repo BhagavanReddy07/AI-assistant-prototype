@@ -8,34 +8,21 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { BrainCircuit, Plus, Trash2 } from 'lucide-react';
+import type { Memory } from '@/lib/types';
 
-type Memory = {
-  id: string;
-  content: string;
-};
 
-const mockMemories: Memory[] = [
-  { id: '1', content: "User's birthday is October 26th." },
-  { id: '2', content: "Favorite color is Teal (#008080)." },
-  { id: '3', content: 'Prefers communication to be formal and concise.' },
-];
+interface MemoryEditorPanelProps {
+    memories: Memory[];
+    onAddMemory: (content: string) => void;
+    onDeleteMemory: (id: string) => void;
+}
 
-export function MemoryEditorPanel() {
-  const [memories, setMemories] = React.useState<Memory[]>(mockMemories);
+export function MemoryEditorPanel({ memories, onAddMemory, onDeleteMemory }: MemoryEditorPanelProps) {
   const [newMemory, setNewMemory] = React.useState('');
 
   const handleAddMemory = () => {
-    if (newMemory.trim() === '') return;
-    const memory: Memory = {
-      id: Math.random().toString(36).substring(2, 15), // mock id
-      content: newMemory,
-    };
-    setMemories(prev => [memory, ...prev]);
+    onAddMemory(newMemory);
     setNewMemory('');
-  };
-
-  const handleDeleteMemory = (id: string) => {
-    setMemories(prev => prev.filter(mem => mem.id !== id));
   };
 
   return (
@@ -75,7 +62,7 @@ export function MemoryEditorPanel() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDeleteMemory(memory.id)}
+                    onClick={() => onDeleteMemory(memory.id)}
                     className="shrink-0 opacity-0 group-hover:opacity-100"
                   >
                     <Trash2 className="h-4 w-4 text-muted-foreground" />

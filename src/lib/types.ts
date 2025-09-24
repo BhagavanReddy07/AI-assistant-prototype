@@ -9,7 +9,7 @@ export type Message = {
 };
 
 export type Conversation = {
-  id: string;
+  id:string;
   title: string;
   createdAt: Date;
   messages: Message[];
@@ -20,4 +20,9 @@ export type Task = {
   type: 'Task' | 'Alarm' | 'Reminder';
   content: string;
   time?: string;
+};
+
+export type Memory = {
+  id: string;
+  content: string;
 };
