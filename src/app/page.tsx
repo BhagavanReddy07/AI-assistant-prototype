@@ -229,7 +229,7 @@ export default function Home() {
           onDeleteConversation={handleDeleteConversation}
           tasks={tasks}
           onAddTask={handleAddTask}
-          onDeleteTask={onDeleteTask}
+          onDeleteTask={handleDeleteTask}
         />
         <main className="flex-1 flex flex-col h-screen overflow-hidden">
           <ChatPanel
